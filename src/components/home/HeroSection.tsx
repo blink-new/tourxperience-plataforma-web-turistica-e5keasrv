@@ -23,6 +23,7 @@ export function HeroSection() {
   const [guests, setGuests] = useState('')
 
   const handleDestinationClick = (destinationName: string) => {
+    // Navigate to search results with destination filter
     navigate(`/search?destination=${encodeURIComponent(destinationName)}`)
   }
 
@@ -122,30 +123,38 @@ export function HeroSection() {
           <div className="space-y-6">
             <h2 className="text-2xl font-semibold text-white">{t.home.popularDestinations}</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {popularDestinations.map((dest, index) => (
+              {popularDestinations && popularDestinations.length > 0 ? popularDestinations.map((dest, index) => (
                 <Card 
-                  key={index}
-                  onClick={() => handleDestinationClick(dest.name)}
+                  key={dest?.id || index}
+                  onClick={() => dest?.name && handleDestinationClick(dest.name)}
                   className="group cursor-pointer overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <div className="relative h-40">
                     <img
-                      src={dest.image}
-                      alt={dest.name}
+                      src={dest?.image || 'https://images.unsplash.com/photo-1518638150340-f706e86654de?w=800'}
+                      alt={dest?.name || 'Destination'}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1518638150340-f706e86654de?w=800'
+                      }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <div className="absolute bottom-3 left-3 text-white">
-                      <h3 className="font-semibold text-lg">{dest.name}</h3>
-                      <p className="text-sm opacity-90">{dest.activitiesCount} actividades</p>
+                      <h3 className="font-semibold text-lg">{dest?.name || 'Loading...'}</h3>
+                      <p className="text-sm opacity-90">{dest?.activitiesCount || 0} actividades</p>
                       <div className="flex items-center gap-1 mt-1">
                         <span className="text-yellow-400">★</span>
-                        <span className="text-sm">{dest.rating}</span>
+                        <span className="text-sm">{dest?.rating || '0.0'}</span>
                       </div>
                     </div>
                   </div>
                 </Card>
-              ))}
+              )) : (
+                // Loading state
+                <div className="col-span-full text-center text-white">
+                  <p>Loading destinations...</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -42,7 +42,13 @@ export default function SearchResultsPage() {
     let filteredActivities: Activity[] = []
     
     if (destination) {
-      filteredActivities = getActivitiesByDestination(destination)
+      // Handle destination filtering - match both exact and partial names
+      filteredActivities = mockActivities.filter(activity => {
+        const activityDestination = activity.destination.toLowerCase()
+        const searchDestination = destination.toLowerCase()
+        return activityDestination.includes(searchDestination) || 
+               searchDestination.includes(activityDestination)
+      })
     } else if (category) {
       filteredActivities = getActivitiesByCategory(category)
     } else if (query) {
@@ -55,7 +61,7 @@ export default function SearchResultsPage() {
     setTimeout(() => {
       setActivities(filteredActivities)
       setLoading(false)
-    }, 800)
+    }, 500)
   }, [destination, category, query])
 
   const handleBookNow = (activity: Activity) => {
@@ -72,27 +78,38 @@ export default function SearchResultsPage() {
 
   const getSearchTitle = () => {
     if (destination) {
+      // Handle destination names - both Spanish and English versions
       const destinationNames: { [key: string]: string } = {
-        'mexico-city': 'Mexico City',
+        'ciudad de méxico': 'Ciudad de México',
+        'mexico city': 'Ciudad de México',
+        'cdmx': 'Ciudad de México',
+        'cancún': 'Cancún',
         'cancun': 'Cancún',
-        'playa-del-carmen': 'Playa del Carmen',
+        'playa del carmen': 'Playa del Carmen',
         'guadalajara': 'Guadalajara',
         'oaxaca': 'Oaxaca',
-        'puerto-vallarta': 'Puerto Vallarta'
+        'puerto vallarta': 'Puerto Vallarta'
       }
-      return `Things to do in ${destinationNames[destination] || destination}`
+      const displayName = destinationNames[destination.toLowerCase()] || destination
+      return `Actividades en ${displayName}`
     }
     
     if (category) {
       const categoryNames: { [key: string]: string } = {
-        'sightseeing': 'Sightseeing Tours',
-        'food-drink': 'Food & Drink Experiences',
-        'outdoor': 'Outdoor Adventures',
-        'entertainment': 'Entertainment',
-        'culture': 'Cultural Experiences',
-        'adventure': 'Adventure Activities'
+        'sightseeing': 'Tours y Visitas Guiadas',
+        'food-drink': 'Experiencias Gastronómicas',
+        'outdoor': 'Aventuras al Aire Libre',
+        'cultural': 'Experiencias Culturales',
+        'water-sports': 'Deportes Acuáticos',
+        'nature': 'Naturaleza y Vida Silvestre',
+        'art-culture': 'Arte y Cultura',
+        'entertainment': 'Entretenimiento',
+        'transportation': 'Transporte',
+        'day-trips': 'Excursiones de un Día',
+        'romantic': 'Experiencias Románticas',
+        'family': 'Actividades Familiares'
       }
-      return categoryNames[category] || `${category} Activities`
+      return categoryNames[category] || `Actividades de ${category}`
     }
     
     if (query) {
@@ -316,9 +333,9 @@ export default function SearchResultsPage() {
 
                       <div className="flex items-center gap-2">
                         <Badge variant="secondary" className="text-xs">
-                          {activity.provider.name}
+                          {activity.providerName}
                         </Badge>
-                        {activity.provider.verified && (
+                        {activity.providerRating >= 4.5 && (
                           <Badge variant="outline" className="text-xs text-green-600 border-green-600">
                             Verified
                           </Badge>

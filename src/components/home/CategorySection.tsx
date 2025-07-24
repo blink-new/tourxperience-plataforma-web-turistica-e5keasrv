@@ -136,37 +136,42 @@ export function CategorySection() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-          {categories.map((category) => {
-            const IconComponent = category.icon
+          {categories && categories.length > 0 ? categories.map((category) => {
+            const IconComponent = category?.icon
             return (
               <Card 
-                key={category.id}
+                key={category?.id || category?.name}
                 className="group cursor-pointer hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
-                onClick={() => handleCategoryClick(category.id)}
+                onClick={() => category?.id && handleCategoryClick(category.id)}
               >
                 <div className="relative h-24 overflow-hidden">
                   <img
-                    src={category.image}
-                    alt={category.name}
+                    src={category?.image || 'https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=300&h=200&fit=crop'}
+                    alt={category?.name || 'Category'}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" />
-                  <div className={`absolute top-2 left-2 p-2 rounded-lg ${category.color} bg-opacity-90`}>
-                    <IconComponent className="h-4 w-4" />
+                  <div className={`absolute top-2 left-2 p-2 rounded-lg ${category?.color || 'bg-blue-100 text-blue-600'} bg-opacity-90`}>
+                    {IconComponent && <IconComponent className="h-4 w-4" />}
                   </div>
                 </div>
                 
                 <CardContent className="p-3 text-center">
                   <h3 className="font-semibold text-sm leading-tight mb-1 group-hover:text-primary transition-colors">
-                    {category.name}
+                    {category?.name || 'Loading...'}
                   </h3>
                   <p className="text-xs text-muted-foreground">
-                    {category.count.toLocaleString()} activities
+                    {category?.count ? category.count.toLocaleString() : '0'} activities
                   </p>
                 </CardContent>
               </Card>
             )
-          })}
+          }) : (
+            // Loading state
+            <div className="col-span-full text-center">
+              <p>Loading categories...</p>
+            </div>
+          )}
         </div>
       </div>
     </section>
