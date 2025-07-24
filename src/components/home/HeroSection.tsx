@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/select'
 import { useTranslations } from '../../i18n'
 import { useNavigate } from 'react-router-dom'
-import { popularDestinations } from '@/data/mockInventory'
+import { popularDestinations, getActivitiesByDestination } from '@/data/mockInventory'
 
 export function HeroSection() {
   const t = useTranslations()
@@ -23,8 +23,16 @@ export function HeroSection() {
   const [guests, setGuests] = useState('')
 
   const handleDestinationClick = (destinationName: string) => {
-    // Navigate to search results with destination filter
-    navigate(`/search?destination=${encodeURIComponent(destinationName)}`)
+    // Get activities for this destination
+    const activities = getActivitiesByDestination(destinationName)
+    
+    if (activities.length > 0) {
+      // Navigate directly to the first activity of this destination
+      navigate(`/activity/${activities[0].id}`)
+    } else {
+      // Fallback to search results if no activities found
+      navigate(`/search?destination=${encodeURIComponent(destinationName)}`)
+    }
   }
 
   const handleSearch = () => {
